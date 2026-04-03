@@ -1,6 +1,7 @@
 {
   "name": "un-poco-de-todo",
   "version": "0.0.1",
+  "packageManager": "pnpm@10.0.0",
   "description": "",
   "author": "",
   "private": true,

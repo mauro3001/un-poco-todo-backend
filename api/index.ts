@@ -2,29 +2,21 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
 
-const server = express();
-let cachedApp;
+let cachedServer;
 
-export const createNestServer = async (expressInstance) => {
-  if (cachedApp) return cachedApp;
-
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressInstance),
-  );
-
-  app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
-  await app.init();
-
-  cachedApp = app;
-  return app;
-};
+async function bootstrap() {
+  if (!cachedServer) {
+    const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(new ValidationPipe());
+    app.enableCors();
+    await app.init();
+    cachedServer = app.getHttpAdapter().getInstance();
+  }
+  return cachedServer;
+}
 
 export default async (req, res) => {
-  await createNestServer(server);
+  const server = await bootstrap();
   server(req, res);
 };
