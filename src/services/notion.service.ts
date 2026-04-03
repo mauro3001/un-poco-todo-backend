@@ -193,4 +193,33 @@ export class NotionService {
       throw new Error(`Error deleting product from Notion: ${error}`);
     }
   }
+
+  async getTags() {
+    try {
+      if (!this.databaseId) {
+        throw new Error('Notion Database ID is not defined.');
+      }
+      const database = (await this.notion.databases.retrieve({
+        database_id: this.databaseId,
+      })) as any;
+
+      const etiquetasProperty = database.properties['Etiquetas'];
+
+      if (
+        etiquetasProperty &&
+        etiquetasProperty.type === 'multi_select' &&
+        etiquetasProperty.multi_select
+      ) {
+        return etiquetasProperty.multi_select.options.map((option: any) => ({
+          id: option.id,
+          name: option.name,
+          color: option.color,
+        }));
+      }
+
+      return [];
+    } catch (error) {
+      throw new Error(`Error getting tags from Notion: ${error}`);
+    }
+  }
 }

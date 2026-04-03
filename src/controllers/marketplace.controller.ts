@@ -34,6 +34,17 @@ export class MarketplaceController {
     return this.notionService.getProducts();
   }
 
+  @ApiOperation({
+    summary: 'Obtener Etiquetas',
+    description:
+      'Recupera todas las opciones de etiquetas configuradas en la columna Etiquetas de Notion.',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de etiquetas recuperada.' })
+  @Get('tags')
+  getTags() {
+    return this.notionService.getTags();
+  }
+
   @ApiSecurity('x-api-key')
   @UseGuards(AdminGuard)
   @ApiOperation({
