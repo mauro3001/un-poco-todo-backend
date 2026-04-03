@@ -14,7 +14,7 @@ export class NotionService {
     this.databaseId = process.env.NOTION_DATABASE_ID as string;
   }
 
-  async getProducts(search?: string) {
+  async getProducts(search?: string, tag?: string) {
     try {
       if (!this.databaseId) {
         throw new Error(
@@ -32,8 +32,10 @@ export class NotionService {
         ],
       };
 
+      const filters: any[] = [];
+
       if (search) {
-        queryParams.filter = {
+        filters.push({
           or: [
             {
               property: 'Name',
@@ -48,7 +50,21 @@ export class NotionService {
               },
             },
           ],
-        };
+        });
+      }
+
+      if (tag) {
+        filters.push({
+          property: 'Etiquetas',
+          multi_select: {
+            contains: tag,
+          },
+        });
+      }
+
+      if (filters.length > 0) {
+        queryParams.filter =
+          filters.length === 1 ? filters[0] : { and: filters };
       }
 
       const notionResult = await this.notion.databases.query(queryParams);

@@ -36,9 +36,14 @@ export class MarketplaceController {
     required: false,
     description: 'Palabra clave para filtrar por Nombre o Descripción',
   })
+  @ApiQuery({
+    name: 'tag',
+    required: false,
+    description: 'Nombre de la etiqueta/categoría (ej: Regulador)',
+  })
   @Get('products')
-  getProducts(@Query('search') search?: string) {
-    return this.notionService.getProducts(search);
+  getProducts(@Query('search') search?: string, @Query('tag') tag?: string) {
+    return this.notionService.getProducts(search, tag);
   }
 
   @ApiOperation({
