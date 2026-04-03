@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -13,6 +14,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiSecurity,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { NotionService } from '../services/notion.service';
 import { Product } from '../entities/product.entity';
@@ -26,12 +28,17 @@ export class MarketplaceController {
   @ApiOperation({
     summary: 'Obtener Catálogo',
     description:
-      'Lista todos los productos activos integrados desde Notion Naturist BD.',
+      'Lista todos los productos activos. Permite filtrar por búsqueda de texto en Nombre o Descripción.',
   })
   @ApiResponse({ status: 200, description: 'Catálogo de productos cargado.' })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Palabra clave para filtrar por Nombre o Descripción',
+  })
   @Get('products')
-  getProducts() {
-    return this.notionService.getProducts();
+  getProducts(@Query('search') search?: string) {
+    return this.notionService.getProducts(search);
   }
 
   @ApiOperation({

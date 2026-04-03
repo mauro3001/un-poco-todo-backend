@@ -14,14 +14,15 @@ export class NotionService {
     this.databaseId = process.env.NOTION_DATABASE_ID as string;
   }
 
-  async getProducts() {
+  async getProducts(search?: string) {
     try {
       if (!this.databaseId) {
         throw new Error(
           'Notion Database ID is not defined in environment variables.',
         );
       }
-      const notionResult = await this.notion.databases.query({
+
+      const queryParams: any = {
         database_id: this.databaseId,
         sorts: [
           {
@@ -29,7 +30,28 @@ export class NotionService {
             direction: 'ascending',
           },
         ],
-      });
+      };
+
+      if (search) {
+        queryParams.filter = {
+          or: [
+            {
+              property: 'Name',
+              title: {
+                contains: search,
+              },
+            },
+            {
+              property: 'Description',
+              rich_text: {
+                contains: search,
+              },
+            },
+          ],
+        };
+      }
+
+      const notionResult = await this.notion.databases.query(queryParams);
 
       return notionResult.results.map((page: any) => {
         const { Name, Description, Price, ImageUrl, Etiquetas } =
