@@ -4,13 +4,12 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request } from 'express';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest<Request>();
-    const apiKey = request.headers['x-api-key'];
+    const request = context.switchToHttp().getRequest();
+    const apiKey = request.headers?.['x-api-key'] || request.get?.('x-api-key');
 
     const adminKey = process.env.ADMIN_API_KEY;
 
